@@ -4,6 +4,7 @@ from django.contrib.auth import get_user_model
 from django.test import TestCase
 
 from ..models import Comment, Rating
+from ..serializers import CommentTreeSerializer
 
 
 class CommentModelTest(TestCase):
@@ -57,5 +58,23 @@ class CommentModelTest(TestCase):
         """Тестирование получения комментариев от узла."""
 
         comments_data = self.comment.get_comments_deeper_from_node()
-        self.assertIn('text', comments_data[0])
         self.assertEqual(comments_data[0]['text'], 'Тестовый комментарий')
+
+        serializer = CommentTreeSerializer()
+        fields = serializer.get_fields()
+        for field_name, _ in fields.items():
+            self.assertIn(field_name, comments_data[0])
+
+        self.assertEqual(len(comments_data[0]['children']), 5)
+
+        children_l_2 = comments_data[0]['children']
+        self.assertEqual(len(children_l_2), 5)
+
+        for i in range(4):
+            self.assertLessEqual(children_l_2[i + 1]['average_rating'], children_l_2[i]['average_rating'])
+
+        children_l_3 = comments_data[0]['children'][0]['children']
+        self.assertEqual(len(children_l_3), 5)
+
+        for i in range(4):
+            self.assertLessEqual(children_l_3[i + 1]['average_rating'], children_l_3[i]['average_rating'])
