@@ -57,5 +57,5 @@ class CommentModelTest(TestCase):
         """Тестирование получения комментариев от узла."""
 
         comments_data = self.comment.get_comments_deeper_from_node()
-        self.assertIn('text', comments_data)
-        self.assertEqual(comments_data['text'], 'Тестовый комментарий')
+        self.assertIn('text', comments_data[0])
+        self.assertEqual(comments_data[0]['text'], 'Тестовый комментарий')

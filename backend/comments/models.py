@@ -4,7 +4,7 @@ from django.contrib.contenttypes.fields import (GenericForeignKey,
                                                 GenericRelation)
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
-from django.db.models import Avg, Prefetch
+from django.db.models import Avg
 from django.utils.translation import gettext_lazy as _
 from ratings.models import Rating
 from rest_framework.exceptions import ValidationError
@@ -95,19 +95,11 @@ class Comment(MP_Node, Create):
         tree = []
         for comment in comments:
             if comment.get_parent() == parent:
-                children = self.__build_comment_tree(comments, parent=comment)
-                tree.append({
-                    'id': comment.id,
-                    'text': comment.text,
-                    'average_rating': comment.average_rating,
-                    'user': {
-                        'id': comment.user.id,
-                        'first_name': comment.user.first_name,
-                        'last_name': comment.user.last_name,
-                        'email': comment.user.email
-                    },
-                    'children': children
+                serializer = CommentTreeSerializer(comment).data
+                serializer.update({
+                    'children': self.__build_comment_tree(comments, parent=comment)
                 })
+                tree.append(serializer)
         return sorted(tree, key=lambda x: x['average_rating'] or 0, reverse=True)
 
     def get_comments_deeper_from_node(self):
@@ -118,18 +110,4 @@ class Comment(MP_Node, Create):
         ).annotate(average_rating=Avg('rating__rating')).select_related('user')
 
         comments_list = list(queryset)
-        comment_tree_data = self.__build_comment_tree(comments_list, parent=self)
-
-        root_comment_data = {
-            'id': self.id,
-            'text': self.text,
-            'average_rating': queryset.filter(id=self.id).first().average_rating,
-            'user': {
-                'id': self.user.id,
-                'first_name': self.user.first_name,
-                'last_name': self.user.last_name,
-                'email': self.user.email
-            },
-            'children': comment_tree_data
-        }
-        return CommentTreeSerializer(root_comment_data).data
+        return self.__build_comment_tree(comments_list)
