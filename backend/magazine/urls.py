@@ -38,8 +38,8 @@ urlpatterns = [
                 path('addresses/', include(('addresses.urls', 'addresses'))),
                 path('attributes/', include(('attributes.urls', 'attributes'))),
                 # path('fileflow/', include(('fileflow.urls', 'fileflow'))),
-                # path('outlets/', include(('outlets.urls', 'outlets'))),
-                # path('products/', include(('products.urls', 'products'))),
+                path('outlets/', include(('outlets.urls', 'outlets'))),
+                path('products/', include(('products.urls', 'products'))),
                 path('warehouses/', include(('warehouses.urls', 'warehouses'))),
             ]
         ),

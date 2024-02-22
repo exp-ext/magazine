@@ -14,6 +14,7 @@ class Warehouse(models.Model):
     ### Args:
     - title(CharField): Название склада.
     - address (Address): Адрес склада.
+    - owner(User): Владелец склада.
 
     """
     title = models.CharField(_("название склада"), max_length=150, unique=True)

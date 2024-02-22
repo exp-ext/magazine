@@ -24,11 +24,11 @@ class Brand(models.Model):
     Модель для представления брендов.
 
     ### Args:
-    - name (`str`): Название бренда.
+    - title (`str`): Название бренда.
     - image (ImageField, опционально): Фото бренда.
 
     """
-    name = models.CharField(_('название бренда'), max_length=100)
+    title = models.CharField(_('название бренда'), max_length=100)
     image = models.ForeignKey(Image, verbose_name=_('картинка'), related_name='brands', on_delete=CASCADE, null=True, blank=True)
 
     class Meta:
@@ -102,7 +102,7 @@ class Product(models.Model):
 
     ### Args:
     - part_number (`str`): Артикул товара.
-    - name (`str`): Название товара.
+    - title (`str`): Название товара.
     - description (`str`, опционально): Описание товара.
     - brand (`Brand`): Бренд товара.
     - category (`ProductsCategory`, опционально): Категория товара.
@@ -123,7 +123,7 @@ class Product(models.Model):
 
     """
     part_number = models.CharField('артикул', max_length=100)
-    name = models.CharField('название', max_length=100)
+    title = models.CharField('название', max_length=100)
     description = models.TextField('описание', null=True, blank=True)
 
     brand = models.ForeignKey(Brand, verbose_name='бренд', related_name='products', on_delete=CASCADE)

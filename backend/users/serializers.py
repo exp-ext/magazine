@@ -10,8 +10,8 @@ class UserSerializer(ModelSerializer):
     """
     Сериализатор для работы с моделью User.
     """
-    first_name = CharField(max_length=150, required=True)
-    last_name = CharField(max_length=150, required=True)
+    first_name = CharField(max_length=150)
+    last_name = CharField(max_length=150)
 
     class Meta:
         model = User
@@ -54,3 +54,10 @@ class SetPasswordSerializer(Serializer):
         instance.set_password(validated_data['new_password'])
         instance.save()
         return validated_data
+
+
+class CropUserSerializer(ModelSerializer):
+
+    class Meta:
+        model = User
+        fields = ('id', 'email', 'first_name', 'last_name',)

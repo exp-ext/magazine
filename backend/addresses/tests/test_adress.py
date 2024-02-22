@@ -107,7 +107,8 @@ class PermissionsTest(unittest.TestCase):
         user = User.objects.create_user(
             email=f"{'admin' if is_staff else 'user'}@test.py",
             password='password',
-            is_staff=is_staff
+            is_staff=is_staff,
+            is_verified=True,
         )
         token, _ = Token.objects.get_or_create(user=user)
         return user, token.key

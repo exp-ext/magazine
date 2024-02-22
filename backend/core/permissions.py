@@ -4,16 +4,25 @@ from rest_framework.request import Request
 from rest_framework.views import View
 
 
+class IsAuthenticated(BasePermission):
+    """
+    Доступ разрешен только аутентифицированным пользователям.
+    """
+
+    def has_permission(self, request, view):
+        return bool(request.user and request.user.is_authenticated)
+
+
 class IsAdmin(BasePermission):
     """
     Права доступа: Администратор.
     """
 
     def has_permission(self, request: Request, view: View) -> bool:
-        return request.user.is_authenticated and request.user.is_admin
+        return bool(request.user.is_authenticated and request.user.is_admin)
 
     def has_object_permission(self, request: Request, view: View, obj: Model) -> bool:
-        return request.user.is_authenticated and request.user.is_admin
+        return self.has_permission(request, view)
 
 
 class IsModerator(BasePermission):
@@ -22,7 +31,7 @@ class IsModerator(BasePermission):
     """
 
     def has_permission(self, request, view):
-        return request.user.is_authenticated and request.user.is_moderator
+        return bool(request.user.is_authenticated and request.user.is_moderator)
 
     def has_object_permission(self, request, view, obj):
         return self.has_permission(request, view)
@@ -34,10 +43,10 @@ class ReadOnly(BasePermission):
     """
 
     def has_permission(self, request: Request, view: View) -> bool:
-        return request.method in SAFE_METHODS
+        return bool(request.method in SAFE_METHODS)
 
     def has_object_permission(self, request: Request, view: View, obj: Model) -> bool:
-        return request.method in SAFE_METHODS
+        return self.has_permission(request, view)
 
 
 class IsOwner(BasePermission):
@@ -46,47 +55,7 @@ class IsOwner(BasePermission):
     """
 
     def has_permission(self, request: Request, view: View) -> bool:
-        return (
-            request.method in SAFE_METHODS
-            or request.user.is_authenticated
-            and request.user.is_active
-        )
+        return bool(request.method in SAFE_METHODS or request.user.is_authenticated and request.user.is_verified)
 
     def has_object_permission(self, request: Request, view: View, obj: Model) -> bool:
-        return request.user and request.user == obj.owner
-
-
-class IsAdminOrReadOnly(BasePermission):
-    """
-    Объединение разрешений IsAdmin и ReadOnly.
-    """
-
-    def has_permission(self, request, view):
-        return IsAdmin().has_permission(request, view) or ReadOnly().has_permission(request, view)
-
-    def has_object_permission(self, request, view, obj):
-        return IsAdmin().has_object_permission(request, view, obj) or ReadOnly().has_object_permission(request, view, obj)
-
-
-class IsModeratorOrReadOnly(BasePermission):
-    """
-    Объединение разрешений IsModerator и ReadOnly.
-    """
-
-    def has_permission(self, request, view):
-        return IsModerator().has_permission(request, view) or ReadOnly().has_permission(request, view)
-
-    def has_object_permission(self, request, view, obj):
-        return IsModerator().has_object_permission(request, view, obj) or ReadOnly().has_object_permission(request, view, obj)
-
-
-class IsOwnerOrReadOnly(BasePermission):
-    """
-    Объединение разрешений IsOwner и ReadOnly.
-    """
-
-    def has_permission(self, request, view):
-        return IsOwner().has_permission(request, view) or ReadOnly().has_permission(request, view)
-
-    def has_object_permission(self, request, view, obj):
-        return IsOwner().has_object_permission(request, view, obj) or ReadOnly().has_object_permission(request, view, obj)
+        return bool(request.user.is_authenticated and request.user == obj.owner)

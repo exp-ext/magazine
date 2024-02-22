@@ -1,5 +1,4 @@
-
-from core.permissions import IsAdminOrReadOnly, IsOwnerOrReadOnly
+from core.permissions import IsAdmin, IsAuthenticated, IsOwner
 from django_filters import rest_framework as filters
 from rest_framework import viewsets
 from warehouses.filters import WarehouseFilter
@@ -8,7 +7,7 @@ from warehouses.serializers import WarehouseSerializer
 
 
 class WarehouseViewSet(viewsets.ModelViewSet):
-    permission_classes = (IsAdminOrReadOnly, IsOwnerOrReadOnly)
+    permission_classes = (IsAuthenticated & (IsOwner | IsAdmin),)
     serializer_class = WarehouseSerializer
     queryset = Warehouse.objects.all()
     filterset_class = WarehouseFilter

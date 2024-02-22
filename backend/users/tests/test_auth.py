@@ -74,7 +74,7 @@ class AuthTestCase(TestCase):
         self.user = User.objects.create_user(**self.user_data)
         self.token = Token.objects.create(user=self.user)
         response = self.client.post('/api/v1/auth/token/logout/')
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_logout(self):
         """

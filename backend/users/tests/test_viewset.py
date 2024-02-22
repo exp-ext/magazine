@@ -44,10 +44,8 @@ class UserViewSetTestCase(TestCase):
         """
         Тест неполучения профиля пользователя.
         """
-        response = self.client.get(
-            f'/api/v1/users/{self.user.id}/'
-        )
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        response = self.client.get(f'/api/v1/users/{self.user.id}/')
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_get_current_user(self):
         """
@@ -92,16 +90,10 @@ class UserViewSetTestCase(TestCase):
             'new_password': 'newtestpassword1',
             'current_password': 'testpassword'
         }
-        response = self.client.post(
-            '/api/v1/users/set_password/', new_password_data
-        )
+        response = self.client.post('/api/v1/users/set_password/', new_password_data)
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
-        self.assertFalse(
-            self.user.check_password(new_password_data['current_password'])
-        )
-        self.assertTrue(
-            self.user.check_password(new_password_data['new_password'])
-        )
+        self.assertFalse(self.user.check_password(new_password_data['current_password']))
+        self.assertTrue(self.user.check_password(new_password_data['new_password']))
 
     def test_not_auth_set_password(self):
         """
@@ -111,7 +103,5 @@ class UserViewSetTestCase(TestCase):
             'new_password': 'newtestpassword1',
             'current_password': 'testpassword'
         }
-        response = self.client.post(
-            '/api/v1/users/set_password/', new_password_data
-        )
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        response = self.client.post('/api/v1/users/set_password/', new_password_data)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)

@@ -8,14 +8,14 @@ from ..models import Attribute, Brand, Manufacturer, Product, ProductsCategory
 class ProductModelTest(TestCase):
     def setUp(self):
         country = Country.objects.create(title="Test Country")
-        self.brand = Brand.objects.create(name="Test Brand")
+        self.brand = Brand.objects.create(title="Test Brand")
         self.product_category = ProductsCategory.add_root(category_name="Test ProductsCategory")
         self.manufacturer = Manufacturer.objects.create(brand=self.brand, title="Test Manufacturer", country=country)
 
     def test_add_attribute_to_model(self):
         test_product = Product.objects.create(
             part_number='118935rh-po',
-            name='test name',
+            title='test name',
             description='test описание' * 10,
             brand=self.brand,
             category=self.product_category,

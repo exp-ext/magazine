@@ -2,32 +2,19 @@ from addresses.models import Address
 from addresses.serializers import AddressSerializer
 from django.db import IntegrityError
 from rest_framework import serializers
-from warehouses.models import Warehouse
+from outlets.models import Outlet
 
 
-class WarehouseSerializer(serializers.ModelSerializer):
-    """
-    Сериализатор для складов.
-
-    ### Attr:
-    - address (AddressSerializer): Сериализатор для адреса склада.
-
-    """
+class OutletSerializer(serializers.ModelSerializer):
     address = AddressSerializer()
-    owner = serializers.ReadOnlyField(source='owner.id')
 
     class Meta:
-        model = Warehouse
-        fields = ('id', 'title', 'address', 'owner')
+        model = Outlet
+        fields = '__all__'
         read_only_fields = ('owner',)
 
     def _create_address(self, validated_data):
         address_data = validated_data.pop('address', None)
-        request = self.context.get('request')
-
-        if request.method == 'PATCH' and not address_data:
-            return validated_data
-
         try:
             address, _ = Address.objects.get_or_create(**address_data)
         except IntegrityError:
